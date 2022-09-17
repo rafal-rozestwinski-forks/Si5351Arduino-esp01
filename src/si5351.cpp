@@ -60,10 +60,17 @@ Si5351::Si5351(uint8_t i2c_addr):
  * I2C address.
  *
  */
-bool Si5351::init(uint8_t xtal_load_c, uint32_t xo_freq, int32_t corr)
+bool Si5351::init(uint8_t xtal_load_c, uint32_t xo_freq, int32_t corr, int32_t sda_pin, int32_t scl_pin)
 {
 	// Start I2C comms
-	Wire.begin();
+	// esp8266 - esp-01:
+	// gpio 0 & gpio 2: SDA=GPIO0 SCL=GPIO2    ; remember pull-ups 3.3k to VCC and series 330 ohm resistor
+	// TX(gpio1) and RX(gpio3) ; remember pull-ups 3.3k to VCC and series 330 ohm resistor
+	if(sda_pin > 0 && sda_pin > 0) {
+		Wire.begin(sda_pin, scl_pin);
+	} else {
+		Wire.begin();
+	}
 
 	// Check for a device on the bus, bail out if it is not there
 	Wire.beginTransmission(i2c_bus_addr);
